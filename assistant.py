@@ -74,6 +74,22 @@ def scrape_headline_news():
         print("  (링크 : {})".format(link))
     print()
 
+def scrape_it_news():
+    print("[IT 뉴스]")
+    url="https://news.naver.com/main/main.naver?mode=LSD&mid=shm&sid1=105"
+    soup=create_soup(url)
+    It_news_items = soup.find("ul", class_="sh_list").find_all("li", limit=3)
+
+    for index, news_item in enumerate(It_news_items):
+        title = news_item.find("a", class_="sh_text_headline").get_text(strip=True)
+        link = news_item.find("a", class_="sh_text_headline")["href"]
+        print("{}. {}".format(index + 1, title))
+        print("  Link: {}".format(link))
+    print()
+    
+
+
 if __name__ =="__main__":
     #scrape_weather() # 오늘의 날씨 정보 가져오기 
-    scrape_headline_news()
+    #scrape_headline_news()
+    scrape_it_news() # IT 뉴스 정보가져오기
