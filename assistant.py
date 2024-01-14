@@ -3,13 +3,16 @@ from bs4 import BeautifulSoup
 
 # pip install beautifulsoup4
 # pip install lxml
+def create_soup(url):
+    res= requests.get(url)
+    res.raise_for_status()
+    soup =BeautifulSoup(res.text,"lxml")
+    return soup
 
 def scrape_weather():
     print("[오늘의 날씨]")
     url ="https://search.naver.com/search.naver?sm=tab_hty.top&where=nexearch&query=%EB%8C%80%EC%A0%84+%EB%82%A0%EC%94%A8&oquery=%EB%B9%84%EC%84%9C+%EC%98%81%EC%96%B4%EB%A1%9C&tqi=ijM32dqVOsVsscFfdY8ssssssKK-360951"
-    res= requests.get(url)
-    res.raise_for_status()
-    soup =BeautifulSoup(res.text,"lxml")
+    soup=create_soup(url)
     # 어제보다 00 도 높다
     cast =soup.find("p", attrs={"class":"summary"}).get_text()
     # 현재 00 도 (최저/ 최고)
@@ -58,5 +61,19 @@ def scrape_weather():
         print("아이스크림 가게로 대피하세요!!")
     '''
 
+
+def scrape_headline_news():
+    print("[뉴스]")
+    url="https://news.naver.com/main/ranking/popularDay.naver"
+    soup=create_soup(url)
+    news_list =soup.find("ul", attrs={"class":"rankingnews_list"}).find_all("li",limit =3)
+    for index, news in enumerate(news_list):
+        title =news.div.find("a").get_text().strip()
+        link =news.div.find("a")["href"]
+        print("{}. {}".format(index+1,title))
+        print("  (링크 : {})".format(link))
+    print()
+
 if __name__ =="__main__":
-    scrape_weather() # 오늘의 날씨 정보 가져오기 
+    #scrape_weather() # 오늘의 날씨 정보 가져오기 
+    scrape_headline_news()
